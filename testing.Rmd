@@ -1,0 +1,194 @@
+---
+title: "Testing ppt"
+author: "Jeremy Selva"
+date: ""
+output:
+  xaringan::moon_reader:
+    chakra: libs/remark-latest.min.js #Enable "offline" use, xaringan::summon_remark()
+    css:
+      - default
+      - libs/remark.css
+    lib_dir: libs
+    nature:
+      ratio: "16:9"
+      highlightStyle: googlecode #Code colour style
+      highlightLines: true
+      highlightLanguage: ["r"]
+      countIncrementalSlides: false
+      slideNumberFormat: |
+        <div class="progress-bar-container">
+          <div class="progress-bar" style="width: calc(%current% / %total% * 100%);">
+          </div>
+        </div>
+---
+
+```{r initial, echo = FALSE, cache = FALSE, results = 'hide'}
+library(knitr)
+library(ISLR2)
+library(leaps)
+options(htmltools.dir.version = FALSE, tibble.width = 60, tibble.print_min = 6)
+opts_chunk$set(
+  echo = FALSE, 
+  warning = FALSE, 
+  message = FALSE, 
+  comment = "#>",
+  fig.path = 'figure/', 
+  cache.path = 'cache/',
+  dpi = 300, 
+  fig.align = 'center', 
+  #fig.width = 6,
+  #fig.asp = 0.618,
+  #fig.show = 'hold',
+  cache = TRUE
+  #dev = 'svglite'
+)
+```
+
+
+---
+# Example on `Hitters` dataset
+
+Code run 
+
+```{r echo=TRUE, eval=FALSE}
+credit <- ISLR2::Credit
+
+regfit_full = leaps::regsubsets(Balance ~., data = credit)
+reg_summary <- summary(regfit_full)
+#plot(reg_summary$rsq, xlab = "Number of Predictors", ylab = "RSquared", type = "l")
+reg_summary
+```
+
+.scrollable[
+
+```{r}
+credit <- ISLR2::Credit
+
+regfit_full = leaps::regsubsets(Balance ~., data = credit)
+reg_summary <- summary(regfit_full)
+#plot(reg_summary$rsq, xlab = "Number of Predictors", ylab = "RSquared", type = "l")
+reg_summary
+```
+
+]
+
+---
+# The Rmd file
+
+* To begin, start a new RProject (this will make life easier if you want to deploy your slides to github). If you forget to do this, you can always follow the steps [here](https://community.rstudio.com/t/creating-a-new-rproject-from-already-saved-files-rmd-md-scripts/14455)
+
+* Next create a presentation from a template using:
+> `File -> New File -> R Markdown -> From Template -> <`_name of template_`>`.
+* This will create a R markdown file that begins with a YAML containing some meta data 
+
+* You can convert your `.Rmd` file to `html` slides by either:
+1. _knitting_ the document by clicking the knit button or on your keyboard using or `Shift` + `Command` + `K`
+2. using the moon reader addin. (Go to the `Addins` dropdown menu at the top of the RStudio window and select `Infinite Moon Reader`) 
+
+* I prefer to use the second option since it allows you to view the slides in the Viewer panel (i.e. within the RStudio window as opposed to a separate pop-up window) and it automatically generates the slides as you type! (i.e. bypassing the need to knit to see your changes)
+
+* Your Rmd file will begin with a YAML, followed by an R setup chunk.
+
+---
+
+# YAML
+
+My .red[YAML] looks like this.  You can change the meta data to what is appropriate.
+
+```yaml
+---
+title: "Xaringan Slides"
+subtitle: "Using the NHS-R theme"
+author: "not me"
+institute: "NHS Organisation"
+
+---
+```
+
+---
+# Images
+
+* You can add images using Rmarkdown (scale depends on image size and it's not very customizable)
+
+> `![](img/this.png)`
+
+* Using knitr (options [here](https://www.rdocumentation.org/packages/knitr/versions/1.30/topics/include_graphics))
+
+```{r echo=TRUE, eval=FALSE}
+knitr::include_graphics("img/camera-green.jpg")
+```
+
+
+* Using HTML (syntax [here](https://www.w3schools.com/html/html_images.asp))
+
+```{r echo=TRUE, eval=FALSE}
+<img src="img/camera-green.jpg" width="90%"/>
+```
+
+.footnote[Some sites for free images include: [upsplash.com](upsplash.com),[rawpixel.com](rawpixel.com), [https://www.pexels.com/](https://www.pexels.com/). Ps footnotes are created using `.footnote[]`  ]
+
+
+---
+# Icons
+
+* Who doesn't love an emoji? Download Hadley Wickhams `emo` package [here](https://github.com/hadley/emo)
+  - ` r emo::ji("face")` =  `r emo::ji("face")` $^{1}$
+  - ` r emo::ji("poop")` = `r emo::ji("poop")`
+
+.footnote[ _no math in footnotes?_ $^{1}$ the above inline R code was not rendered because I added a .red[space] in between the backtick and the r.]  
+
+You can also use [Font Awesome](https://fontawesome.com/) icons: 
+- Using the `icons` [library](https://github.com/mitchelloharawild/icons)
+  + `icons::fontawesome("rocket", style = "solid")` = `r icons::fontawesome("rocket", style = "solid")` 
+  + `icons::fontawesome$solid$rocket` = `r icons::fontawesome$solid$rocket`
+  -   ` r icons::fontawesome("orcid")` = `r icons::fontawesome("orcid")`
+
+- Using `fa()` from the `fontawesome` package:
+  -  ` r fontawesome::fa("r-project", fill = "steelblue")` =  `r fontawesome::fa("r-project", fill = "steelblue")`
+  
+  
+---
+## This is cool and probably really useful for class:
+
+.pull-left[
+### Code
+
+----
+
+```{r irisplot, echo=TRUE, fig.show='hide'}
+plot(iris[,1:2], 
+     col=iris$Species, 
+     pch=as.numeric(iris$Species)+17)
+```
+The plot created on the right hand side did *NOT* repeat the code above.  Rather it referenced the code chunk by name:
+- Chunk 1: 
+ 
+ `{r irisplot, echo=TRUE, fig.show='hide'}`
+ 
+- Chunk 2:
+ 
+ `{r, ref.label="irisplot", echo=TRUE}`
+ 
+]
+
+.pull-right[
+
+### Plot
+
+----
+```{r, ref.label="irisplot", fig.asp = 0.618, fig.width = 8}
+```
+
+]
+
+
+---
+class: middle
+# Code highlighting
+
+if you want to draw attention to some particular line of code you can use highlight in gray by proceeding the line of code with `#<<`.  For example, in the R chunk, line 3 actually is written as `z = x + y #<< `
+```{r echo=TRUE}
+x <- 4
+y <- 10
+z = x + y #<<
+```

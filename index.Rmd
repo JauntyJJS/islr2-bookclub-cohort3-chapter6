@@ -1,0 +1,428 @@
+---
+title: "Chapter 6"
+author: "Jeremy Selva"
+date: ""
+output:
+  xaringan::moon_reader:
+    chakra: libs/remark-latest.min.js #Enable "offline" use, xaringan::summon_remark()
+    css:
+      - default
+      - libs/remark.css
+    lib_dir: libs
+    nature:
+      ratio: "16:9"
+      highlightStyle: googlecode #Code colour style
+      highlightLines: true
+      highlightLanguage: ["r"]
+      countIncrementalSlides: false
+      slideNumberFormat: |
+        <div class="progress-bar-container">
+          <div class="progress-bar" style="width: calc(%current% / %total% * 100%);">
+          </div>
+        </div>
+---
+
+```{r initial, echo = FALSE, cache = FALSE, results = 'hide'}
+library(knitr)
+library(ISLR2)
+library(leaps)
+options(htmltools.dir.version = FALSE, tibble.width = 60, tibble.print_min = 6)
+opts_chunk$set(
+  echo = FALSE, 
+  warning = FALSE, 
+  message = FALSE, 
+  comment = "#>",
+  fig.path = 'figure/', 
+  cache.path = 'cache/',
+  dpi = 300, 
+  fig.align = 'center', 
+  #fig.width = 6,
+  #fig.asp = 0.618,
+  #fig.show = 'hold',
+  cache = TRUE
+  #dev = 'svglite'
+)
+```
+
+# Introduction
+
+This chapter introduces alternative fitting procedures can yield better 
+
+- Prediction Accuracy
+- Model Interpretability
+
+These methods are
+
+- Subset Selection
+- Shrinkage
+- Dimension Reduction
+
+---
+# 6.1.1 Best Subset Selection
+
+Fit a separate least squares regression for all possible combination of $p$ predictors and find the best one.
+
+1. Let $M_0$ be the sample mean. Denote as the *null model* with no predictors.
+2. For $k = 1,2,...p$:
+
+  a) Fit $\binom{p}{k}$ models that contain exactly $k$ predictors.
+  
+  b) $M_k =$ the best among these $\binom{p}{k}$ models via largest $R^2$
+  
+3. Choose the optimal model from $M_0,...,M_p$ using a different model selection criteria from $R^2$.
+
+  - Cross-validation, $C_p$, $\mathrm{AIC}$, $\mathrm{BIC}$, or Adjusted $R^2$.
+
+In step 3, we can't use $R^2$ because it increases monotonically as the number of predictors included in the models increases.
+
+.red[Unfortunately, this method is computationally infeasible for large values of p.]
+
+---
+# 6.1.2 Stepwise Selection
+
+Forward stepwise selection helps to reduce the computational burden by adding predictors one at a time. In each step, we add the predictor that gives the .green[**greatest**] improvement to the model.
+
+1. Let $M_0$ be the sample mean. Denote as the *null model* with no predictors.
+
+2. For $k = 0,1,...p-1$:
+
+  a) .green[Fit] $(p-k)$ .green[models that contain predictors in] $M_k$ .green[and one additional predictors not in] $M_k$.
+  
+  b) $M_{k+1} =$ the best among these $(p-k)$ models via largest $R^2$.
+  
+3. Choose the optimal model from $M_0,...,M_{p}$ using a different model selection criteria from $R^2$.
+
+  - Cross-validation, $C_p$, $\mathrm{AIC}$, $\mathrm{BIC}$, or Adjusted $R^2$.
+
+---
+# 6.1.2 Stepwise Selection
+
+Backward stepwise selection begins with a model containing all predictors and we eliminate the predictors one at a time. In each step, we eliminate the predictor that gives the .green[**least**] error to the model when removed.
+
+1. Let $M_p$ be the *full model* with $p$ predictors.
+
+2. For $k = p,p-1,...1$:
+
+  a) .green[Fit] $(k-1)$ .green[models that contain all but one predictors in] $M_k$.
+  
+  b) $M_{k-1} =$ the best among these $(k-1)$ models via largest $R^2$.
+  
+3. Choose the optimal model from $M_0,...,M_{p}$ using a different model selection criteria from $R^2$.
+
+  - Cross-validation, $C_p$, $\mathrm{AIC}$, $\mathrm{BIC}$, or Adjusted $R^2$.
+
+---
+# 6.1.3 Choosing the Optimal Model
+
+Recall that in step 3 of all our approaches, we can't use $R^2$ because it increases monotonically as the number of predictors included in the models increases. The alternative model selection criteria must .red[**penalise**] models that uses more predictors.
+
+```{r echo = FALSE}
+knitr::include_graphics("img/figure_6_2.jpg")
+```
+
+---
+# 6.1.3 Choosing the Optimal Model
+
+For a fitted least squares model containing $d$ predictors, where $0 \le d\le p$,
+
+$$
+C_{p}=\frac{1}{n}\left(\mathrm{RSS}+2 d \hat{\sigma}^{2}\right)
+$$
+where $\hat\sigma^2$ is an estimate of the variance of the error $\epsilon$ in model $(6.1)$
+
+$$
+Y = β_0 + β_1X_1 + · · · + β_pX_p + ϵ
+$$
+In the case of a linear model, $\hat\sigma^2$ = $\mathrm{RSE}^2$ from equation $(3.25)$ in page 80 or
+
+$$
+\hat\sigma^2 = \frac{\mathrm{RSS}}{n-p-1}
+$$
+
+The $C_p$ statistic essentially adds a penalty of $2d\hat\sigma^2$ to the training $\mathrm{RSS}$ in order to adjust for the fact that the training error usually underestimate the test error. Hence, we choose the model with the lowest $C_p$ value
+---
+
+# 6.1.3 Choosing the Optimal Model
+
+For a fitted least squares model containing $d$ predictors, where $0 \le d\le p$, given model $(6.1)$ 
+
+$$
+Y = β_0 + β_1X_1 + · · · + β_pX_p + ϵ
+$$
+with Gaussian errors like $ϵ \sim N(0,\sigma^2)$. 
+
+Removing irrelevant constants, we have
+
+$$
+\mathrm{AIC} = C_{p}=\frac{1}{n}\left(\mathrm{RSS}+2 d \hat{\sigma}^{2}\right)
+$$
+$$
+\mathrm{BIC} = \frac{1}{n}\left(\mathrm{RSS}+log(n) d \hat{\sigma}^{2}\right)
+$$
+Like $C_p$, we choose the model with the lowest $\mathrm{BIC}$ value. However, since $log(n) > 2$ for $n < 7$, the $\mathrm{BIC}$ places a heavier penalty than $C_p$ and $\mathrm{AIC}$ on models with many variables.
+---
+# 6.1.3 Choosing the Optimal Model
+
+For a fitted least squares model containing $d$ predictors, where $0 \le d\le p$, 
+
+$$
+Adjusted R^2=1-\frac{\mathrm{RSS}/(n-d-1)}{\mathrm{TSS}/(n-1)}
+$$
+
+The idea is that increasing $d$, will increase the numerator $\mathrm{RSS}/(n-d-1)$, leading to a decrease in the adjusted $R^2$ value.
+
+Besides using $C_p$, $\mathrm{AIC}$, $\mathrm{BIC}$, or Adjusted $R^2$, we can also use the validation set and cross-validation methods
+discussed in Chapter 5
+
+---
+# 6.2 Shrinkage
+
+An alternative way to improve the linear model is to fit the model containing all $p$ predictors
+
+$$
+Y = β_0 + β_1X_1 + · · · + β_pX_p + ϵ
+$$
+but shrinks the regression coefficients $β_0,β_1,...,β_p$ towards zero.
+
+The two best-known techniques are *ridge regression* and the *lasso*.
+
+---
+# 6.2.1 Ridge Regression
+
+In the least squares fitting procedure, given $n$ samples and $p$ predictors, 
+the regression coefficients $β_0,β_1,...,β_p$ was estimated to minimise the $\mathrm{RSS}$ denoted by
+
+$$\mathrm{RSS}=\sum_{i=1}^{n}\left(y_{i}-\beta_{0}-\sum_{j=1}^{p} \beta_{j} x_{i j}\right)^{2}$$
+
+Ridge regression is similar to least squares, except we are minimizing the regression coefficients by
+
+$$\mathrm{RSS}+\lambda \sum_{j=1}^{p} \beta_{j}^{2}$$
+
+where $\lambda \ge 0$ is a *tuning parameter*.
+
+The second term $\lambda \sum_{j=1}^{p} \beta_{j}^{2}$ is called the *shrinkage penalty*. It can only be small when the regression coefficients $β_1,...,β_p$ are small. Thus, forcing them to be close to $0$. The shrinkage is not applied to the intercept $\beta_0$. 
+
+---
+# 6.2.1 Ridge Regression
+
+$$\mathrm{RSS}+\lambda \sum_{j=1}^{p} \beta_{j}^{2}$$
+$\lambda$ controls the relative impact of these two terms (at $\lambda = 0$ it is the original least squares estimate). As $\lambda$ increase, the ridge coefficient estimates shrink towards zero.
+
+It is best to apply ridge regression after *standardizing the predictors*, using the formula for each dataset $x_{ij}$
+
+$$\overline{x_{ij}}=\frac{x_{ij}}{\sqrt{\frac{1}{n}\sum_{i=1}^{n}(x_{ij}-\overline{x_j})^{2}}}$$
+
+This is to ensure each predictor has equal scale/variance/noise and can be penalised equally. 
+
+A predictor $X_k$ with a variance/noise much larger than others tends to have its corresponding coefficient estimate $\beta_k$ to be much larger than the others. As the ridge regression penalty involves summing up all the coefficient estimate $\lambda (\sum_{j=1}^{p} \beta_{j}^{2})$, we have a bias as $\beta_k$ will shrink close to zero at a slower pace as $\lambda$ increases and the predictor may be mistakenly identified as being useful.
+
+---
+# 6.2.2 The Lasso
+
+The issue with ridge regression is its need to include all $p$ predictors. Its *shrinkage penalty* $\lambda \sum_{j=1}^{p} \beta_{j}^{2}$ can only shrink its regression coefficients $β_1,...,β_p$ close to $0$ but not exactly $0$ as $\lambda$ gets large. 
+
+This means that it is hard to interpret if the most important predictors in the ridge regression are really useful. We still need to verify this by creating a new model with just the important predictors. This is be challenging when the number of predictors $p$ gets large.
+
+The *lasso* on the other hand, tries to overcome this disadvantage by having its regression coefficients that minisise this quantity
+
+$$\sum_{i=1}^{n}\left(y_{i}-\beta_{0}-\sum_{j=1}^{p} \beta_{j} x_{i j}\right)^{2}+\lambda \sum_{j=1}^{p} |\beta_{j}|=\mathrm{RSS}+\lambda \sum_{j=1}^{p} |\beta_{j}|$$
+
+where $\lambda \ge 0$ is a *tuning parameter*.
+
+Lasso's *shrinkage penalty* $\lambda \sum_{j=1}^{p} |\beta_{j}|$ is able to force its regression coefficients to be exactly $0$ as $\lambda$ gets large. Thus, able to create models which only contains the useful predictors.
+
+---
+# 6.2.3 Selecting the Tuning Parameter
+
+.pull-left[
+Implementing ridge regression and the lasso requires a method for selecting a suitable value for the tuning parameter $\lambda$. This is achieved by using cross validation for each value of $\lambda$ and take the value that gives the least cross-validation error. The model is then re-fitted using all of the available observations and the selected value of the tuning parameter. [Blog post examples](https://cscheid.net/writing/data_science/regularization/index.html)
+]
+
+.pull-right[
+```{r echo = FALSE}
+knitr::include_graphics("img/RidgeRegression.jpg")
+```
+]
+
+---
+# 6.3 Dimension Reduction
+The next method involves transforming the predictors $X_1,...,X_p$ to $Z_1,...,Z_M$ where $M < p$ and
+
+$$Z_M=\sum_{j=1}^{p}\phi_{jm}X_j$$
+for some constants $\phi_{1m}, \phi_{2m},..., \phi_{pm}$, $m = 1,...,M$.
+
+The transformed variables $Z_1,...,Z_M$ is then used to build a regression model giving these regression coefficients $θ_0,...,θ_M$.
+
+$$y_i = θ_0 + \sum_{m=1}^{M}θ_mz_{im} + ϵ_i$$
+for $i= 1,..,n$.
+
+---
+# 6.3 Dimension Reduction
+
+The condition on the transformation is that it must be possible to express each regression coefficients $β_1,...,β_p$ of the original predictors $X_1,...,X_p$ in terms of $θ_0,...,θ_M$ and in this form 
+
+$$\beta_{j}=\sum_{m=1}^{M}θ_m\phi_{jm}$$
+We will consider two approaches for this task: *principal components* and *partial least squares*
+
+---
+# 6.3.1 Principal Components Regression
+Principal components are projected directions/vector of the data that best represent the data's variation or as close as possible to the data.
+
+```{r echo = FALSE}
+knitr::include_graphics("img/figure_6_14.jpg")
+```
+
+---
+# 6.3.1 Principal Components Regression
+The first principal component line minimizes the sum of the squared perpendicular distances between each point and the green
+line. These distances are plotted as dashed line segments in the left-hand panel of Figure 6.15
+
+```{r echo = FALSE}
+knitr::include_graphics("img/figure_6_15.jpg")
+```
+
+---
+# 6.3.1 Principal Components Regression
+In terms of formula, the first principal component $Z_1$ is 
+
+$$Z_1 = 0.839 × (pop − \overline{pop}) + 0.544 × (ad − \overline{ad})$$
+where $\phi_{11} = 0.839$, $\phi_{21} = 0.544$, $\overline{pop}$ is the mean of all $pop$ values and $\overline{ad}$ is the mean of all $ad$ values in this data set.
+
+$\phi_{11}$ and $\phi_{21}$ were estimated to ensure $Var(\phi_{11} × (pop − \overline{pop}) + \phi_{21} × (ad − \overline{ad}))$ is maximised under the condition that $\phi_{11}^2 + \phi_{21}^2 = 1$.
+
+From $Z_1$, the principal component scores $z_{11}, . . . , z_{n1}$ can be computed
+---
+# 6.3.1 Principal Components Regression
+The values of $z_{11}, . . . , z_{n1}$ can be seen in the right-hand panel of Figure 6.15.
+
+```{r echo = FALSE}
+knitr::include_graphics("img/figure_6_15.jpg")
+```
+
+---
+# 6.3.1 Principal Components Regression
+
+Figures 6.16 shows how $Z_1$, the first principal component has a strong positive correlation with $pop$ and $ad$. Hence, it is able to capture most of the information contained the predictor variable $pop$ and $ad$.
+
+```{r echo = FALSE}
+knitr::include_graphics("img/figure_6_16.jpg")
+```
+---
+# 6.3.1 Principal Components Regression
+
+The second principal componet $Z_2$ must obey the following conditions
+- It must be expressed in the form $\phi_{12} × (pop − \overline{pop}) + \phi_{22} × (ad − \overline{ad})$
+- It must be uncorrelated/perpendicular/orthogonal to $Z_1$ the first principal component.
+
+```{r echo = FALSE}
+knitr::include_graphics("img/figure_6_14.jpg")
+``` 
+
+---
+# 6.3.1 Principal Components Regression
+In terms of formula, the second principal component $Z_2$ is 
+
+$$Z_2 = 0.544 × (pop − \overline{pop}) - 0.839 × (ad − \overline{ad})$$
+However, this time unlike the first principal component $Z_1$, its relationship between $pop$ and $ad$ is poor.
+
+```{r echo = FALSE}
+knitr::include_graphics("img/figure_6_17.jpg")
+``` 
+
+---
+# 6.3.1 Principal Components Regression
+
+Principal components regression transforming the predictors $X_1,...,X_p$ into principal components $Z_1,...,Z_M$ where $M < p$ and use these as new predictors to build a regression model giving these regression coefficients $θ_0,...,θ_M$.
+
+The assumption made is that
+- a small number of principal components is needed to explain most of the variability in the data 
+- principal components has a good relationship with the response $Y$. (which is not always true)
+
+The number of principal components $M$ can be achieved by cross validation starting from $1$ to $p$. The $M$ value that gives the lowest cross validation error will be selected.
+
+Like ridge regression, it is advised to *standardize the predictors* before converting them to principal components as high-variance variables will tend to play a larger role in the principal components obtained.
+
+Principal components regression does not work if the principal components does not has a good relationship with the response $Y$.
+
+---
+# 6.3.2 Partial Least Squares
+
+The partial Least Squares method overcome this weakness by making use of the response $Y$ to transform the predictors further.
+
+Like ridge regression, it is advised to *standardize the predictors* before converting them to partial least square components.
+
+After standardizing the $p$ predictors, PLS computes the first direction $Z_1$ by setting $\phi_{j1}$ in
+
+$$Z_1=\sum_{j=1}^{p}\phi_{j1}X_j$$
+equal to the coefficient $B_j$ from the simple linear regression $Y = intercept + B_jX_j$.
+
+$B_j$ is is proportional to the correlation between $Y$ and $X_j$. Hence, PLS places the highest weight on the variables that are most strongly related to the response.
+
+---
+# 6.3.2 Partial Least Squares
+
+```{r echo = FALSE}
+knitr::include_graphics("img/figure_6_21.jpg")
+``` 
+
+PLS has chosen a direction that has less change in the $ad$ dimension per unit change in the $pop$ dimension, relative to PCA. This suggests that $pop$ is more highly correlated with the response than is $ad$.
+
+The PLS direction does not fit the predictors as closely as does PCA, but it does a better job explaining the response.
+
+---
+# 6.3.2 Partial Least Squares
+
+To get the second PLS direction, each variable $X_j$ is regressed on $Z_1$ or 
+
+$$X_j = intecept + (some\space coefficient)Z_1 + R_j$$
+for $j=1,...,p$, and the residuals $R_j$ are taken. The residuals represent the remaining information that has not been explained by $Z_1$.
+
+We can then use these residuals to compute $Z_2$ in the same way that $Z_1$ was computed on the original data.
+
+$$Z_2=\sum_{j=1}^{p}\phi_{j2}R_j$$
+equal to the coefficient $B_j$ from the simple linear regression $Y = intercept + B_jR_j$.
+
+---
+# 6.3.2 Partial Least Squares
+
+This iterative approach can be repeated M times to identify multiple PLS components $Z_1,...,Z_M$. Finally, at the end of this procedure, we use least squares to fit a linear model to predict $Y$ using
+$Z_1,...,Z_M$ in exactly the same fashion as for PCR.
+
+The number of partial least square components $M$ can be achieved by cross validation starting from $1$ to $p$. The $M$ value that gives the lowest cross validation error will be selected.
+
+---
+# 6.4.1 High-Dimensional Data
+
+Most traditional statistical techniques for regression and classification are intended for low-dimensional setting in which $n$, the number of observations, is much greater than $p$, the number of predictors. However, as technologies improved, it is common to collect an almost unlimited number of feature measurements
+
+We have defined the high-dimensional setting as the case where the number of predictors $p$ is larger than the number of observations $n$.
+
+---
+# 6.4.2 What Goes Wrong in High Dimensions?
+
+Figure 6.23 further illustrates the risk of carelessly applying least squares when the number of features $p$ is large. Data were simulated with $n = 20$ observations, and regression was performed with between $1$ and $20$ predictors, each of which was completely unrelated to the response.
+
+```{r echo = FALSE}
+knitr::include_graphics("img/figure_6_23.jpg")
+``` 
+
+---
+# 6.4.3 Regression in High Dimensions
+
+Figure 6.24 illustrates the performance of the lasso in a simple simulated example of $n = 100$ training observations, and the test mean squared error was evaluated on an independent test set.
+
+```{r echo = FALSE}
+knitr::include_graphics("img/figure_6_24.jpg")
+``` 
+
+---
+# 6.4.4 Interpreting Results in High Dimensions
+
+In the high-dimensional setting, it is easy to encounter a predictor that is highly correlated with another predictor. This makes it harder to identify which predictor is meaningful or important.
+
+It is advised to report results on an independent test set, or cross-validation errors. 
+
+Models must be further validated on multiple independent data sets. 
+- For example, suppose a forward stepwise selection results in 17 predictors to predict blood pressure on one independent dataset. It is possible that these 17 predictors may not be selected by the same forward stepwise selection process on another independent dataset.   
+
+Model that are effective in prediction, may make use of variables that not be useful in the field of study.

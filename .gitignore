@@ -1,0 +1,8 @@
+.DS_Store
+cache/
+*.run.xml
+.Rproj.user
+renv/
+.Rhistory
+.Rdata
+.httr-oauth

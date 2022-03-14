@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Chapter 6</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Jeremy Selva" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link rel="stylesheet" href="libs/remark.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Chapter 6
+### Jeremy Selva
+
+---
+
+
+
+
+
+---
+# Example on `Hitters` dataset
+
+Code run 
+
+
+```r
+credit &lt;- ISLR2::Credit
+
+regfit_full = leaps::regsubsets(Balance ~., data = credit)
+reg_summary &lt;- summary(regfit_full)
+#plot(reg_summary$rsq, xlab = "Number of Predictors", ylab = "RSquared", type = "l")
+reg_summary
+```
+
+.scrollable[
+
+
+```
+#&gt; Subset selection object
+#&gt; Call: regsubsets.formula(Balance ~ ., data = credit)
+#&gt; 11 Variables  (and intercept)
+#&gt;             Forced in Forced out
+#&gt; Income          FALSE      FALSE
+#&gt; Limit           FALSE      FALSE
+#&gt; Rating          FALSE      FALSE
+#&gt; Cards           FALSE      FALSE
+#&gt; Age             FALSE      FALSE
+#&gt; Education       FALSE      FALSE
+#&gt; OwnYes          FALSE      FALSE
+#&gt; StudentYes      FALSE      FALSE
+#&gt; MarriedYes      FALSE      FALSE
+#&gt; RegionSouth     FALSE      FALSE
+#&gt; RegionWest      FALSE      FALSE
+#&gt; 1 subsets of each size up to 8
+#&gt; Selection Algorithm: exhaustive
+#&gt;          Income Limit Rating Cards Age Education OwnYes StudentYes MarriedYes
+#&gt; 1  ( 1 ) " "    " "   "*"    " "   " " " "       " "    " "        " "       
+#&gt; 2  ( 1 ) "*"    " "   "*"    " "   " " " "       " "    " "        " "       
+#&gt; 3  ( 1 ) "*"    " "   "*"    " "   " " " "       " "    "*"        " "       
+#&gt; 4  ( 1 ) "*"    "*"   " "    "*"   " " " "       " "    "*"        " "       
+#&gt; 5  ( 1 ) "*"    "*"   "*"    "*"   " " " "       " "    "*"        " "       
+#&gt; 6  ( 1 ) "*"    "*"   "*"    "*"   "*" " "       " "    "*"        " "       
+#&gt; 7  ( 1 ) "*"    "*"   "*"    "*"   "*" " "       "*"    "*"        " "       
+#&gt; 8  ( 1 ) "*"    "*"   "*"    "*"   "*" " "       "*"    "*"        " "       
+#&gt;          RegionSouth RegionWest
+#&gt; 1  ( 1 ) " "         " "       
+#&gt; 2  ( 1 ) " "         " "       
+#&gt; 3  ( 1 ) " "         " "       
+#&gt; 4  ( 1 ) " "         " "       
+#&gt; 5  ( 1 ) " "         " "       
+#&gt; 6  ( 1 ) " "         " "       
+#&gt; 7  ( 1 ) " "         " "       
+#&gt; 8  ( 1 ) " "         "*"
+```
+
+]
+
+---
+# The Rmd file
+
+* To begin, start a new RProject (this will make life easier if you want to deploy your slides to github). If you forget to do this, you can always follow the steps [here](https://community.rstudio.com/t/creating-a-new-rproject-from-already-saved-files-rmd-md-scripts/14455)
+
+* Next create a presentation from a template using:
+&gt; `File -&gt; New File -&gt; R Markdown -&gt; From Template -&gt; &lt;`_name of template_`&gt;`.
+* This will create a R markdown file that begins with a YAML containing some meta data 
+
+* You can convert your `.Rmd` file to `html` slides by either:
+1. _knitting_ the document by clicking the knit button or on your keyboard using or `Shift` + `Command` + `K`
+2. using the moon reader addin. (Go to the `Addins` dropdown menu at the top of the RStudio window and select `Infinite Moon Reader`) 
+
+* I prefer to use the second option since it allows you to view the slides in the Viewer panel (i.e. within the RStudio window as opposed to a separate pop-up window) and it automatically generates the slides as you type! (i.e. bypassing the need to knit to see your changes)
+
+* Your Rmd file will begin with a YAML, followed by an R setup chunk.
+
+---
+
+# YAML
+
+My .red[YAML] looks like this.  You can change the meta data to what is appropriate.
+
+```yaml
+---
+title: "Xaringan Slides"
+subtitle: "Using the NHS-R theme"
+author: "not me"
+institute: "NHS Organisation"
+
+---
+```
+
+---
+# Images
+
+* You can add images using Rmarkdown (scale depends on image size and it's not very customizable)
+
+&gt; `![](img/this.png)`
+
+* Using knitr (options [here](https://www.rdocumentation.org/packages/knitr/versions/1.30/topics/include_graphics))
+
+
+```r
+knitr::include_graphics("img/camera-green.jpg")
+```
+
+
+* Using HTML (syntax [here](https://www.w3schools.com/html/html_images.asp))
+
+
+```r
+&lt;img src="img/camera-green.jpg" width="90%"/&gt;
+```
+
+.footnote[Some sites for free images include: [upsplash.com](upsplash.com),[rawpixel.com](rawpixel.com), [https://www.pexels.com/](https://www.pexels.com/). Ps footnotes are created using `.footnote[]`  ]
+
+
+---
+# Icons
+
+* Who doesn't love an emoji? Download Hadley Wickhams `emo` package [here](https://github.com/hadley/emo)
+  - ` r emo::ji("face")` =  😎 `\(^{1}\)`
+  - ` r emo::ji("poop")` = 💩
+
+.footnote[ _no math in footnotes?_ `\(^{1}\)` the above inline R code was not rendered because I added a .red[space] in between the backtick and the r.]  
+
+You can also use [Font Awesome](https://fontawesome.com/) icons: 
+- Using the `icons` [library](https://github.com/mitchelloharawild/icons)
+  + `icons::fontawesome("rocket", style = "solid")` = &lt;svg viewBox="0 0 512 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M505.12019,19.09375c-1.18945-5.53125-6.65819-11-12.207-12.1875C460.716,0,435.507,0,410.40747,0,307.17523,0,245.26909,55.20312,199.05238,128H94.83772c-16.34763.01562-35.55658,11.875-42.88664,26.48438L2.51562,253.29688A28.4,28.4,0,0,0,0,264a24.00867,24.00867,0,0,0,24.00582,24H127.81618l-22.47457,22.46875c-11.36521,11.36133-12.99607,32.25781,0,45.25L156.24582,406.625c11.15623,11.1875,32.15619,13.15625,45.27726,0l22.47457-22.46875V488a24.00867,24.00867,0,0,0,24.00581,24,28.55934,28.55934,0,0,0,10.707-2.51562l98.72834-49.39063c14.62888-7.29687,26.50776-26.5,26.50776-42.85937V312.79688c72.59753-46.3125,128.03493-108.40626,128.03493-211.09376C512.07526,76.5,512.07526,51.29688,505.12019,19.09375ZM384.04033,168A40,40,0,1,1,424.05,128,40.02322,40.02322,0,0,1,384.04033,168Z"&gt;&lt;/path&gt;&lt;/svg&gt; 
+  + `icons::fontawesome$solid$rocket` = &lt;svg viewBox="0 0 512 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M505.12019,19.09375c-1.18945-5.53125-6.65819-11-12.207-12.1875C460.716,0,435.507,0,410.40747,0,307.17523,0,245.26909,55.20312,199.05238,128H94.83772c-16.34763.01562-35.55658,11.875-42.88664,26.48438L2.51562,253.29688A28.4,28.4,0,0,0,0,264a24.00867,24.00867,0,0,0,24.00582,24H127.81618l-22.47457,22.46875c-11.36521,11.36133-12.99607,32.25781,0,45.25L156.24582,406.625c11.15623,11.1875,32.15619,13.15625,45.27726,0l22.47457-22.46875V488a24.00867,24.00867,0,0,0,24.00581,24,28.55934,28.55934,0,0,0,10.707-2.51562l98.72834-49.39063c14.62888-7.29687,26.50776-26.5,26.50776-42.85937V312.79688c72.59753-46.3125,128.03493-108.40626,128.03493-211.09376C512.07526,76.5,512.07526,51.29688,505.12019,19.09375ZM384.04033,168A40,40,0,1,1,424.05,128,40.02322,40.02322,0,0,1,384.04033,168Z"&gt;&lt;/path&gt;&lt;/svg&gt;
+  -   ` r icons::fontawesome("orcid")` = &lt;svg viewBox="0 0 512 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M294.75 188.19h-45.92V342h47.47c67.62 0 83.12-51.34 83.12-76.91 0-41.64-26.54-76.9-84.67-76.9zM256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm-80.79 360.76h-29.84v-207.5h29.84zm-14.92-231.14a19.57 19.57 0 1 1 19.57-19.57 19.64 19.64 0 0 1-19.57 19.57zM300 369h-81V161.26h80.6c76.73 0 110.44 54.83 110.44 103.85C410 318.39 368.38 369 300 369z"&gt;&lt;/path&gt;&lt;/svg&gt;
+
+- Using `fa()` from the `fontawesome` package:
+  -  ` r fontawesome::fa("r-project", fill = "steelblue")` =  <svg aria-hidden="true" role="img" viewBox="0 0 581 512" style="height:1em;width:1.13em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:steelblue;overflow:visible;position:relative;"><path d="M581 226.6C581 119.1 450.9 32 290.5 32S0 119.1 0 226.6C0 322.4 103.3 402 239.4 418.1V480h99.1v-61.5c24.3-2.7 47.6-7.4 69.4-13.9L448 480h112l-67.4-113.7c54.5-35.4 88.4-84.9 88.4-139.7zm-466.8 14.5c0-73.5 98.9-133 220.8-133s211.9 40.7 211.9 133c0 50.1-26.5 85-70.3 106.4-2.4-1.6-4.7-2.9-6.4-3.7-10.2-5.2-27.8-10.5-27.8-10.5s86.6-6.4 86.6-92.7-90.6-87.9-90.6-87.9h-199V361c-74.1-21.5-125.2-67.1-125.2-119.9zm225.1 38.3v-55.6c57.8 0 87.8-6.8 87.8 27.3 0 36.5-38.2 28.3-87.8 28.3zm-.9 72.5H365c10.8 0 18.9 11.7 24 19.2-16.1 1.9-33 2.8-50.6 2.9v-22.1z"/></svg>
+  
+  
+---
+## This is cool and probably really useful for class:
+
+.pull-left[
+### Code
+
+----
+
+
+```r
+plot(iris[,1:2], 
+     col=iris$Species, 
+     pch=as.numeric(iris$Species)+17)
+```
+The plot created on the right hand side did *NOT* repeat the code above.  Rather it referenced the code chunk by name:
+- Chunk 1: 
+ 
+ `{r irisplot, echo=TRUE, fig.show='hide'}`
+ 
+- Chunk 2:
+ 
+ `{r, ref.label="irisplot", echo=TRUE}`
+ 
+]
+
+.pull-right[
+
+### Plot
+
+----
+&lt;img src="figure/unnamed-chunk-5-1.png" style="display: block; margin: auto;" /&gt;
+
+]
+
+
+---
+class: middle
+# Code highlighting
+
+if you want to draw attention to some particular line of code you can use highlight in gray by proceeding the line of code with `#&lt;&lt;`.  For example, in the R chunk, line 3 actually is written as `z = x + y #&lt;&lt; `
+
+```r
+x &lt;- 4
+y &lt;- 10
+*z = x + y
+```
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "googlecode",
+"highlightLines": true,
+"highlightLanguage": "r",
+"countIncrementalSlides": false,
+"slideNumberFormat": "<div class=\"progress-bar-container\">\n  <div class=\"progress-bar\" style=\"width: calc(%current% / %total% * 100%);\">\n  </div>\n</div>"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
