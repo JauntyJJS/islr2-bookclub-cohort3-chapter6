@@ -434,3 +434,4 @@ Models must be further validated on multiple independent data sets.
 - For example, suppose a forward stepwise selection results in 17 predictors to predict blood pressure on one independent dataset. It is possible that these 17 predictors may not be selected by the same forward stepwise selection process on another independent dataset.   
 
 Models that are effective in prediction, may make use of variables that not be useful in the field of study.
+
