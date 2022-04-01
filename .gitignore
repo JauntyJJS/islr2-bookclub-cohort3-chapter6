@@ -5,4 +5,5 @@ cache/
 renv/
 .Rhistory
 .Rdata
+.Renviron
 .httr-oauth
