@@ -1,7 +1,9 @@
-# jsm19
+# ISLR2 Chapter 6 slides for R4DS book club cohort 3
 
-[![License: CC BY NC 4.0](https://img.shields.io/badge/License-CC%20BY%20NC%204.0-green.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
+An Introduction to Statistical Learning: With Applications in R Second
+Edition Chapter 6 slides for R for Data Science book club cohort 3.
 
-Slides for Joint Statistical Meeting on 28 July 2019.
+Here are the source code for my
+[slides](https://jauntyjjs.github.io/islr2-bookclub-cohort3-chapter6)
 
-Rendered slides: <https://slides.earo.me/jsm19>
+![First-slide](share-card.png)
