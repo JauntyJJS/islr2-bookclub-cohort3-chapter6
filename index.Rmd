@@ -317,7 +317,7 @@ The model is then re-fitted using all of the available observations and the sele
 ]
 
 .pull-right[
-```{r echo = FALSE}
+```{r echo = FALSE, out.width="60%"}
 knitr::include_graphics("img/RidgeRegression.jpg")
 ```
 ]
