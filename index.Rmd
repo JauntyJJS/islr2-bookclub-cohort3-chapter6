@@ -175,7 +175,7 @@ In step 3, we can't use $R^2$ because it increases monotonically as the number o
 
 2. For $k = p,p-1,...1$:
 
-  a) .green[Fit] $(k)$ .green[models that contain all but one predictors in] $M_k$, for a total of $k−1$ predictors.
+  a) .green[Fit] $k$ .green[models that contain all but one predictors in] $M_k$, for a total of $k−1$ predictors.
   
   b) $M_{k-1} =$ the best among these $(k-1)$ models via largest $R^2$.
   
